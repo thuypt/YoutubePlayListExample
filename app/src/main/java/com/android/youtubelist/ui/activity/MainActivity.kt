@@ -85,6 +85,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        viewModel.clear()
         compositeDisposable.clear()
         super.onDestroy()
     }

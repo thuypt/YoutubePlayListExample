@@ -59,6 +59,10 @@ class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, Main
             }))
     }
 
+    fun clear() {
+        compositeDisposable.clear()
+    }
+
     override fun showProgressDialog(): Observable<Unit> = showProgressDialogSubject
 
     override fun hideProgressDialog(): Observable<Unit> = hideProgressSubject
