@@ -38,10 +38,6 @@ class VideoDetailActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedLi
 
     override fun onInitializationFailure(provider: YouTubePlayer.Provider,
                                          youTubeInitializationResult: YouTubeInitializationResult) {
-        if (youTubeInitializationResult.isUserRecoverableError) {
-            youTubeInitializationResult.getErrorDialog(this, 1).show()
-        } else {
-            //todo another error here
-        }
+        youTubeInitializationResult.getErrorDialog(this, 1).show()
     }
 }

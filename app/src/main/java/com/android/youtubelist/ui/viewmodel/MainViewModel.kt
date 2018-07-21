@@ -15,7 +15,6 @@ import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 
 class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, MainInputs {
-
     val outputs = this
     val inputs = this
 
