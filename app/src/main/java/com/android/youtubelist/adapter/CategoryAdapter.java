@@ -69,40 +69,59 @@ public class CategoryAdapter extends BaseExpandableListAdapter {
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded,
                              View convertView, ViewGroup parent) {
+        GroupViewHolder groupViewHolder;
         if (convertView == null) {
             LayoutInflater layoutInflater = (LayoutInflater) mContext.
                 getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = layoutInflater.inflate(R.layout.layout_category_item, null);
+            groupViewHolder = new GroupViewHolder();
+            groupViewHolder.titleTv = convertView.findViewById(R.id.categoryTitleTv);
+            convertView.setTag(groupViewHolder);
+        } else {
+            groupViewHolder = (GroupViewHolder) convertView.getTag();
         }
-        TextView listTitleTextView = convertView.findViewById(R.id.categoryTitleTv);
-        listTitleTextView.setText(mListCategory.get(groupPosition).getListTitle());
+        groupViewHolder.titleTv.setText(mListCategory.get(groupPosition).getListTitle());
         return convertView;
     }
 
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild,
                              View convertView, ViewGroup parent) {
+        ChildViewHolder childViewHolder;
         Video video = mListCategory.get(groupPosition).getListItems().get(childPosition);
         if (convertView == null) {
             LayoutInflater layoutInflater = (LayoutInflater) mContext
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = layoutInflater.inflate(R.layout.layout_video_item, null);
+            childViewHolder = new ChildViewHolder();
+            childViewHolder.titleTv = convertView.findViewById(R.id.title);
+            childViewHolder.thumbImg = convertView.findViewById(R.id.img_thumbnail);
+            convertView.setTag(childViewHolder);
+        } else {
+            childViewHolder = (ChildViewHolder) convertView.getTag();
         }
-        TextView txtListChild = convertView.findViewById(R.id.title);
-        txtListChild.setText(video.getTitle());
-        ImageView thumbImg = convertView.findViewById(R.id.img_thumbnail);
+        childViewHolder.titleTv.setText(video.getTitle());
         Glide.with(mContext)
             .load(video.getThumb())
             .crossFade()
             .placeholder(R.drawable.img_video_default)
             .dontAnimate()
             .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-            .into(thumbImg);
+            .into(childViewHolder.thumbImg);
         return convertView;
     }
 
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
         return true;
-    }//todo holder here, also this  list looks not nice: animations, try another library
+    }
+
+    class ChildViewHolder {
+        TextView titleTv;
+        ImageView thumbImg;
+    }
+
+    class GroupViewHolder {
+        TextView titleTv;
+    }
 }
