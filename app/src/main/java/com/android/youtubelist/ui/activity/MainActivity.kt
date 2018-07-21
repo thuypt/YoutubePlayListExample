@@ -1,4 +1,4 @@
-package com.android.youtubelist
+package com.android.youtubelist.ui.activity
 
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
@@ -7,10 +7,10 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.view.View
+import com.android.youtubelist.R
 import com.android.youtubelist.adapter.CategoryAdapter
 import com.android.youtubelist.model.Playlist
 import com.android.youtubelist.model.Video
-import com.android.youtubelist.ui.activity.VideoDetailActivity
 import com.android.youtubelist.ui.viewmodel.MainViewModel
 import com.android.youtubelist.ui.viewmodel.factory.MainViewModelFactory
 import io.reactivex.disposables.CompositeDisposable
