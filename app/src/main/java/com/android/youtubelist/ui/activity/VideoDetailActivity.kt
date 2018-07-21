@@ -19,7 +19,7 @@ class VideoDetailActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedLi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.layout_video_detail_activity)
-        youtube_view.initialize(getString(R.string.youtube_developer_key), this)
+        youtubeView.initialize(getString(R.string.youtube_developer_key), this)
         video = intent.getParcelableExtra(VIDEO) as Video
     }
 

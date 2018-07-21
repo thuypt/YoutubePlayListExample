@@ -9,11 +9,13 @@ import com.android.youtubelist.ui.viewmodel.output.MainOutputs
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import io.reactivex.functions.BiFunction
 import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 
 class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, MainInputs {
+
     val outputs = this
     val inputs = this
 
@@ -23,6 +25,7 @@ class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, Main
     private val showErrorMessageSubject: PublishSubject<String> = PublishSubject.create()
     private val openVideoDetailScreenSubject: PublishSubject<Video> = PublishSubject.create()
     private val playlistSubject: BehaviorSubject<Playlist> = BehaviorSubject.create()
+    private val childItemClickSubject: PublishSubject<Pair<Int, Int>> = PublishSubject.create()
 
     private var compositeDisposable = CompositeDisposable()
 
@@ -43,6 +46,13 @@ class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, Main
                     hideProgressSubject.onNext(Unit)
                 }
             }))
+
+        bindCall(childItemClickSubject
+            .withLatestFrom(playlistSubject,
+                BiFunction<Pair<Int, Int>, Playlist, Video> { itemClick, list ->
+                    list.playlists[itemClick.first].listItems?.get(itemClick.second)
+                })
+            .subscribe(openVideoDetailScreenSubject::onNext))
     }
 
     override fun showProgressDialog(): Observable<Unit> = showProgressSubject
@@ -56,6 +66,10 @@ class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, Main
     override fun openVideoDetailScreen(): Observable<Video> = openVideoDetailScreenSubject
 
     override fun setPlaylist(): Observable<Playlist> = playlistSubject
+
+    override fun onChildItemClick(groupPosition: Int, childPosition: Int) {
+        childItemClickSubject.onNext(Pair(groupPosition, childPosition))
+    }
 
     private fun bindCall(disposable: Disposable): Boolean = compositeDisposable.add(disposable)
 }
