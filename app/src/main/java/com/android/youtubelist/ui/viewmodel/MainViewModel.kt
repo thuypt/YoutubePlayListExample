@@ -13,7 +13,6 @@ import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.subjects.PublishSubject
 
 class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, MainInputs {
-
     val outputs = this
     val inputs = this
 
@@ -22,20 +21,24 @@ class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, Main
     private val showEmptyStateSubject: PublishSubject<Unit> = PublishSubject.create()
     private val showErrorMessageSubject: PublishSubject<String> = PublishSubject.create()
     private val openVideoDetailScreenSubject: PublishSubject<Video> = PublishSubject.create()
+    private val setPlaylistSubject: PublishSubject<Playlist> = PublishSubject.create()
 
-    private lateinit var compositeDisposable: CompositeDisposable
+    private var compositeDisposable = CompositeDisposable()
 
     init {
-        compositeDisposable = CompositeDisposable()
+        showProgressSubject.onNext(Unit)
         bindCall(repository
             .getPlayList()
             .subscribeWith(object : DisposableSingleObserver<Playlist>() {
 
                 override fun onSuccess(data: Playlist) {
+                    setPlaylistSubject.onNext(data)
+                    hideProgressSubject.onNext(Unit)
                 }
 
                 override fun onError(e: Throwable) {
-                    showErrorMessageSubject.onNext("Error")
+                    showErrorMessageSubject.onNext(e.message)
+                    hideProgressSubject.onNext(Unit)
                 }
             }))
 
@@ -50,6 +53,8 @@ class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, Main
     override fun showErrorMessage(): Observable<String> = showErrorMessageSubject
 
     override fun openVideoDetailScreen(): Observable<Video> = openVideoDetailScreenSubject
+
+    override fun setPlaylist(): Observable<Playlist> = setPlaylistSubject
 
     private fun bindCall(disposable: Disposable): Boolean = compositeDisposable.add(disposable)
 }

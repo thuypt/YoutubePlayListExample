@@ -1,5 +1,6 @@
 package com.android.youtubelist.ui.viewmodel.output
 
+import com.android.youtubelist.model.Playlist
 import com.android.youtubelist.model.Video
 import io.reactivex.Observable
 
@@ -13,4 +14,6 @@ interface MainOutputs {
     fun showErrorMessage(): Observable<String>
 
     fun openVideoDetailScreen(): Observable<Video>
+
+    fun setPlaylist(): Observable<Playlist>
 }
