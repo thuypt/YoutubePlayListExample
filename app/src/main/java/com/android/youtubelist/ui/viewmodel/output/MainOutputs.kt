@@ -9,8 +9,6 @@ interface MainOutputs {
 
     fun hideProgressDialog(): Observable<Unit>
 
-    fun showEmptyState(): Observable<Unit>
-
     fun showErrorMessage(): Observable<String>
 
     fun openVideoDetailScreen(): Observable<Video>

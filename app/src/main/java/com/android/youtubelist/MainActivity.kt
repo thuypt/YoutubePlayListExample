@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import com.android.youtubelist.adapter.CategoryAdapter
 import com.android.youtubelist.model.Playlist
@@ -30,22 +31,22 @@ class MainActivity : AppCompatActivity() {
 
     private fun initViews() {
         adapter = CategoryAdapter(this)
-        categoryExpandList.setAdapter(adapter)
-        categoryExpandList.setChildIndicator(null);
-        categoryExpandList.setChildDivider(ContextCompat.getDrawable(this, android.R.color.white))
-        categoryExpandList
-            .setOnChildClickListener { _, _, groupPosition, childPosition, _ ->
+        categoryExpandList.apply {
+            setChildIndicator(null)
+            emptyView = emptyView
+            adapter = adapter
+            setChildDivider(ContextCompat.getDrawable(this@MainActivity, android.R.color.white))
+            setOnChildClickListener { _, _, groupPosition, childPosition, _ ->
                 viewModel.inputs.onChildItemClick(groupPosition, childPosition)
                 false
             }
+        }
     }
 
     private fun initViewModel() {
-        viewModel = ViewModelProviders
-            .of(this, MainViewModelFactory())
+        viewModel = ViewModelProviders.of(this, MainViewModelFactory())
             .get(MainViewModel::class.java)
 
-        bindCall(viewModel.outputs.showEmptyState().subscribe(::showEmptyState))
         bindCall(viewModel.outputs.showErrorMessage().subscribe(::showErrorMessage))
         bindCall(viewModel.outputs.showProgressDialog().subscribe(::showProgressDialog))
         bindCall(viewModel.outputs.hideProgressDialog().subscribe(::hideProgressDialog))
@@ -58,12 +59,12 @@ class MainActivity : AppCompatActivity() {
         adapter.notifyDataSetChanged()
     }
 
-    private fun showEmptyState(unit: Unit) {
-
-    }
-
     private fun showErrorMessage(message: String) {
-
+        AlertDialog.Builder(this@MainActivity).create().apply {
+            setMessage(message)
+            setButton(AlertDialog.BUTTON_NEUTRAL, "OK") { dialog, _ -> dialog.dismiss() }
+            show()
+        }
     }
 
     private fun showProgressDialog(unit: Unit) {
@@ -76,7 +77,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun openVideoDetailScreen(video: Video) {
         val intent = Intent(this@MainActivity, VideoDetailActivity::class.java)
-        intent.putExtra(VideoDetailActivity.VIDEO, video)
+            .apply { putExtra(VideoDetailActivity.VIDEO, video) }
         startActivity(intent)
     }
 

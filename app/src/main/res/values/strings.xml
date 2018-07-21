@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">YoutubePlaylist</string>
+    <string name="message_no_data">No Visible Data</string>
 </resources>

@@ -21,7 +21,6 @@ class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, Main
 
     private val showProgressSubject: PublishSubject<Unit> = PublishSubject.create()
     private val hideProgressSubject: PublishSubject<Unit> = PublishSubject.create()
-    private val showEmptyStateSubject: PublishSubject<Unit> = PublishSubject.create()
     private val showErrorMessageSubject: PublishSubject<String> = PublishSubject.create()
     private val openVideoDetailScreenSubject: PublishSubject<Video> = PublishSubject.create()
     private val playlistSubject: BehaviorSubject<Playlist> = BehaviorSubject.create()
@@ -42,7 +41,6 @@ class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, Main
 
                 override fun onError(e: Throwable) {
                     showErrorMessageSubject.onNext(e.message)
-                    showEmptyStateSubject.onNext(Unit)
                     hideProgressSubject.onNext(Unit)
                 }
             }))
@@ -58,8 +56,6 @@ class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, Main
     override fun showProgressDialog(): Observable<Unit> = showProgressSubject
 
     override fun hideProgressDialog(): Observable<Unit> = hideProgressSubject
-
-    override fun showEmptyState(): Observable<Unit> = showEmptyStateSubject
 
     override fun showErrorMessage(): Observable<String> = showErrorMessageSubject
 
