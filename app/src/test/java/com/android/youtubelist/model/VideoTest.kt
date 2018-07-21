@@ -18,7 +18,9 @@ class VideoTest {
 
     @Test
     fun `when video link is valid, it returns proper video id`() {
-        val video = Video("video_title", "https://www.youtube.com/watch?v=aJOTlE1K90k", "video_thumb")
+        val video = Video("video_title",
+            "https://www.youtube.com/watch?v=aJOTlE1K90k",
+            "video_thumb")
         assertTrue(video.id == "aJOTlE1K90k")
     }
 }

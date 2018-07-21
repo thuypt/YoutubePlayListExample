@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.youtubelist.R;
-import com.android.youtubelist.model.Category;
+import com.android.youtubelist.model.CategoryVideo;
 import com.android.youtubelist.model.Video;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -19,31 +19,31 @@ import java.util.Objects;
 
 public class PlaylistAdapter extends BaseExpandableListAdapter {
     private final Context mContext;
-    private final ArrayList<Category> mListCategory;
+    private final ArrayList<CategoryVideo> mListCategoryVideo;
 
     public PlaylistAdapter(Context context) {
         mContext = context;
-        mListCategory = new ArrayList<>();
+        mListCategoryVideo = new ArrayList<>();
     }
 
-    public void clearAndAddAll(ArrayList<Category> data) {
-        mListCategory.clear();
-        mListCategory.addAll(data);
+    public void clearAndAddAll(ArrayList<CategoryVideo> data) {
+        mListCategoryVideo.clear();
+        mListCategoryVideo.addAll(data);
     }
 
     @Override
     public int getGroupCount() {
-        return mListCategory.size();
+        return mListCategoryVideo.size();
     }
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return Objects.requireNonNull(mListCategory.get(groupPosition).getListItems()).size();
+        return Objects.requireNonNull(mListCategoryVideo.get(groupPosition).getListItems()).size();
     }
 
     @Override
-    public Category getGroup(int groupPosition) {
-        return mListCategory.get(groupPosition);
+    public CategoryVideo getGroup(int groupPosition) {
+        return mListCategoryVideo.get(groupPosition);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class PlaylistAdapter extends BaseExpandableListAdapter {
         } else {
             groupViewHolder = (GroupViewHolder) convertView.getTag();
         }
-        groupViewHolder.titleTv.setText(mListCategory.get(groupPosition).getListTitle());
+        groupViewHolder.titleTv.setText(mListCategoryVideo.get(groupPosition).getListTitle());
         return convertView;
     }
 
@@ -88,7 +88,7 @@ public class PlaylistAdapter extends BaseExpandableListAdapter {
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild,
                              View convertView, ViewGroup parent) {
         ChildViewHolder childViewHolder;
-        Video video = mListCategory.get(groupPosition).getListItems().get(childPosition);
+        Video video = mListCategoryVideo.get(groupPosition).getListItems().get(childPosition);
         if (convertView == null) {
             LayoutInflater layoutInflater = (LayoutInflater) mContext
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);

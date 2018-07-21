@@ -1,6 +1,6 @@
 package com.android.youtubelist.ui.viewmodel
 
-import com.android.youtubelist.model.Category
+import com.android.youtubelist.model.CategoryVideo
 import com.android.youtubelist.model.Playlist
 import com.android.youtubelist.model.Video
 import com.android.youtubelist.network.ApiService
@@ -63,7 +63,7 @@ class MainViewModelTest {
     fun `When item click, it calls open video detail screen`() {
         val apiServiceSuccessful = mock(ApiService::class.java)
         val video = Video("video_title", "video_link", "video_thumb")
-        val category = Category("category_title", arrayListOf(video, video, video))
+        val category = CategoryVideo("category_title", arrayListOf(video, video, video))
         val playlist = Playlist(arrayListOf(category, category))
         `when`(apiServiceSuccessful.getPlayList()).thenReturn(Single.just(playlist))
 

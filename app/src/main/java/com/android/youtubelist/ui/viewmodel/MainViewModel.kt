@@ -23,10 +23,10 @@ class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, Main
     private val hideProgressSubject: PublishSubject<Boolean> = PublishSubject.create()
     private val showErrorMessageSubject: PublishSubject<String> = PublishSubject.create()
     private val openVideoDetailScreenSubject: PublishSubject<Video> = PublishSubject.create()
-    private val playlistSubject: BehaviorSubject<Playlist> = BehaviorSubject.create()
+    private val playlistDataSubject: BehaviorSubject<Playlist> = BehaviorSubject.create()
     private val childItemClickSubject: PublishSubject<Pair<Int, Int>> = PublishSubject.create()
 
-    private var compositeDisposable = CompositeDisposable()
+    private var disposables = CompositeDisposable()
 
     init {
         bindCall(fetchPlaylistSubject.subscribe(::requestPlaylist))
@@ -37,7 +37,7 @@ class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, Main
             .subscribe(showProgressDialogSubject::onNext))
 
         bindCall(childItemClickSubject
-            .withLatestFrom(playlistSubject,
+            .withLatestFrom(playlistDataSubject,
                 BiFunction<Pair<Int, Int>, Playlist, Video> { itemClick, playlists ->
                     playlists.get(itemClick)
                 })
@@ -49,7 +49,7 @@ class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, Main
             .getPlayList()
             .subscribeWith(object : DisposableSingleObserver<Playlist>() {
                 override fun onSuccess(data: Playlist) {
-                    playlistSubject.onNext(data)
+                    playlistDataSubject.onNext(data)
                     hideProgressSubject.onNext(isSwipeRefresh)
                 }
 
@@ -60,7 +60,7 @@ class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, Main
             }))
     }
 
-    fun clear() = compositeDisposable.clear()
+    fun clear() = disposables.clear()
 
     override fun showProgressDialog(): Observable<Unit> = showProgressDialogSubject
 
@@ -70,7 +70,7 @@ class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, Main
 
     override fun openVideoDetailScreen(): Observable<Video> = openVideoDetailScreenSubject
 
-    override fun setPlaylist(): Observable<Playlist> = playlistSubject
+    override fun setPlaylist(): Observable<Playlist> = playlistDataSubject
 
     override fun fetchPlaylist(isSwipeRefresh: Boolean) = fetchPlaylistSubject.onNext(isSwipeRefresh)
 
@@ -78,7 +78,7 @@ class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, Main
         childItemClickSubject.onNext(Pair(groupPosition, childPosition))
     }
 
-    private fun bindCall(disposable: Disposable): Boolean = compositeDisposable.add(disposable)
+    private fun bindCall(disposable: Disposable): Boolean = disposables.add(disposable)
 }
 
 fun Playlist.get(itemClick: Pair<Int, Int>): Video? =
