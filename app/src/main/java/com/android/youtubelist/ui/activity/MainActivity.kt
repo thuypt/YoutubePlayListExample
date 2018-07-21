@@ -8,6 +8,7 @@ import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.view.View
+import android.widget.AbsListView
 import com.android.youtubelist.R
 import com.android.youtubelist.adapter.CategoryAdapter
 import com.android.youtubelist.espressoidling.EspressoIdlingResource
@@ -46,6 +47,19 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
         }
 
         swiperefresh.setOnRefreshListener(this)
+        swiperefresh.isEnabled = false
+        categoryExpandList.setOnScrollListener(object : AbsListView.OnScrollListener {
+            override fun onScrollStateChanged(view: AbsListView, scrollState: Int) {
+            }
+
+            override fun onScroll(view: AbsListView, firstVisibleItem: Int,
+                                  visibleItemCount: Int, totalItemCount: Int) {
+                val topRowVerticalPosition =
+                    if (categoryExpandList == null || categoryExpandList.childCount == 0) 0
+                    else categoryExpandList.getChildAt(0).top
+                swiperefresh.isEnabled = firstVisibleItem == 0 && topRowVerticalPosition >= 0
+            }
+        })
     }
 
     private fun initViewModel() {
