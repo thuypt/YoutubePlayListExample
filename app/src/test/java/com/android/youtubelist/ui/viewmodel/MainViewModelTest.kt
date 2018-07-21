@@ -85,4 +85,25 @@ class MainViewModelTest {
             .assertValueCount(1)
             .assertValue { it == video }
     }
+
+    @Test
+    fun `When swipe to refresh, it calls load data`() {
+        val apiServiceSuccessful = mock(ApiService::class.java)
+        val playlist = Playlist(ArrayList())
+        `when`(apiServiceSuccessful.getPlayList()).thenReturn(Single.just(playlist))
+        val viewModel = MainViewModel(apiServiceSuccessful)
+
+        val showProgressDialog = viewModel.outputs.showProgressDialog().test()
+        val hideProgressDialog = viewModel.outputs.hideProgressDialog().test()
+        val setPlaylist = viewModel.outputs.setPlaylist().test()
+        val showErrorMessage = viewModel.outputs.showErrorMessage().test()
+        val openVideoDetailScreen = viewModel.outputs.openVideoDetailScreen().test()
+
+        viewModel.inputs.fetchPlaylist(true)
+        showProgressDialog.assertValueCount(0)
+        hideProgressDialog.assertValueCount(1).assertValue { it }
+        showErrorMessage.assertValueCount(0)
+        setPlaylist.assertValueCount(1)
+        openVideoDetailScreen.assertValueCount(0)
+    }
 }
