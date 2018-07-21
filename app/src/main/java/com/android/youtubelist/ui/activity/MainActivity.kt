@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import com.android.youtubelist.R
 import com.android.youtubelist.adapter.CategoryAdapter
+import com.android.youtubelist.espressoidling.EspressoIdlingResource
 import com.android.youtubelist.model.Playlist
 import com.android.youtubelist.model.Video
 import com.android.youtubelist.ui.viewmodel.MainViewModel
@@ -71,9 +72,11 @@ class MainActivity : AppCompatActivity() {
     private fun showProgressDialog(unit: Unit) {
         categoryExpandList.visibility = View.GONE
         progressbar.visibility = View.VISIBLE
+        EspressoIdlingResource.increment()
     }
 
     private fun hideProgressDialog(unit: Unit) {
+        EspressoIdlingResource.decrement()
         progressbar.visibility = View.GONE
         categoryExpandList.visibility = View.VISIBLE
     }
