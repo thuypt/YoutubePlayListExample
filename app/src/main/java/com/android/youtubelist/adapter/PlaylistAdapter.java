@@ -17,11 +17,11 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class CategoryAdapter extends BaseExpandableListAdapter {
+public class PlaylistAdapter extends BaseExpandableListAdapter {
     private final Context mContext;
     private final ArrayList<Category> mListCategory;
 
-    public CategoryAdapter(Context context) {
+    public PlaylistAdapter(Context context) {
         mContext = context;
         mListCategory = new ArrayList<>();
     }

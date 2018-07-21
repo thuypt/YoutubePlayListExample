@@ -37,7 +37,7 @@ class ActivityInstrumentationTest {
 
     @Test
     fun initializeShowListData() {
-        onView(withId(R.id.categoryExpandList))
+        onView(withId(R.id.mainExpandableList))
             .check(matches(isDisplayed()))
     }
 
@@ -48,12 +48,12 @@ class ActivityInstrumentationTest {
 
     private fun openVideoDetailActivity() {
         onData(anything())
-            .inAdapterView(withId(R.id.categoryExpandList))
+            .inAdapterView(withId(R.id.mainExpandableList))
             .atPosition(0)
             .perform(click())
 
         onData(anything())
-            .inAdapterView(withId(R.id.categoryExpandList))
+            .inAdapterView(withId(R.id.mainExpandableList))
             .atPosition(1)
             .perform(click())
     }
@@ -62,7 +62,7 @@ class ActivityInstrumentationTest {
     fun testBackPressed() {
         openVideoDetailActivity()
         onView(isRoot()).perform(ViewActions.pressBack())
-        onView(withId(R.id.categoryExpandList))
+        onView(withId(R.id.mainExpandableList))
             .check(matches(isDisplayed()))
     }
 }
