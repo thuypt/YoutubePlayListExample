@@ -29,17 +29,17 @@ class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, Main
     private var compositeDisposable = CompositeDisposable()
 
     init {
-        bindCall(fetchPlaylistSubject
-            .subscribe { requestPlaylist(it) })
+        bindCall(fetchPlaylistSubject.subscribe(::requestPlaylist))
 
         bindCall(fetchPlaylistSubject
             .filter { !it }
-            .subscribe { showProgressDialogSubject.onNext(Unit) })
+            .map { Unit }
+            .subscribe(showProgressDialogSubject::onNext))
 
         bindCall(childItemClickSubject
             .withLatestFrom(playlistSubject,
-                BiFunction<Pair<Int, Int>, Playlist, Video> { itemClick, list ->
-                    list.playlists[itemClick.first].listItems?.get(itemClick.second)
+                BiFunction<Pair<Int, Int>, Playlist, Video> { itemClick, playlists ->
+                    playlists.get(itemClick)
                 })
             .subscribe(openVideoDetailScreenSubject::onNext))
     }
@@ -60,9 +60,7 @@ class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, Main
             }))
     }
 
-    fun clear() {
-        compositeDisposable.clear()
-    }
+    fun clear() = compositeDisposable.clear()
 
     override fun showProgressDialog(): Observable<Unit> = showProgressDialogSubject
 
@@ -82,3 +80,6 @@ class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, Main
 
     private fun bindCall(disposable: Disposable): Boolean = compositeDisposable.add(disposable)
 }
+
+fun Playlist.get(itemClick: Pair<Int, Int>): Video? =
+    this.playlists[itemClick.first].listItems?.get(itemClick.second)

@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class CategoryAdapter extends BaseExpandableListAdapter {
     private final Context mContext;
@@ -37,8 +38,7 @@ public class CategoryAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        // todo is there any check indexOutOf Bound??
-        return mListCategory.get(groupPosition).getListItems().size();
+        return Objects.requireNonNull(mListCategory.get(groupPosition).getListItems()).size();
     }
 
     @Override
@@ -48,7 +48,7 @@ public class CategoryAdapter extends BaseExpandableListAdapter {
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        return getGroup(groupPosition).getListItems().get(childPosition);
+        return Objects.requireNonNull(getGroup(groupPosition).getListItems()).get(childPosition);
     }
 
     @Override
@@ -84,9 +84,9 @@ public class CategoryAdapter extends BaseExpandableListAdapter {
                              View convertView, ViewGroup parent) {
         Video video = mListCategory.get(groupPosition).getListItems().get(childPosition);
         if (convertView == null) {
-            LayoutInflater infalInflater = (LayoutInflater) mContext
+            LayoutInflater layoutInflater = (LayoutInflater) mContext
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = infalInflater.inflate(R.layout.layout_video_item, null);
+            convertView = layoutInflater.inflate(R.layout.layout_video_item, null);
         }
         TextView txtListChild = convertView.findViewById(R.id.title);
         txtListChild.setText(video.getTitle());

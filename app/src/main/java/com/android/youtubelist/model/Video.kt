@@ -3,12 +3,14 @@ package com.android.youtubelist.model
 import android.os.Parcel
 import android.os.Parcelable
 
-data class Video(val title: String?, val link: String?, val thumb: String?
-) : Parcelable {
-    val youtubeBaseUrl = "https://www.youtube.com/watch?v="
+data class Video(val title: String?,
+                 val link: String?,
+                 val thumb: String?) : Parcelable {
+    private val youtubeBaseUrl = "https://www.youtube.com/watch?v="
     val id
         get() =
-            if (link != null && link.contains(youtubeBaseUrl)) link.replace(youtubeBaseUrl, "")
+            if (link != null && link.contains(youtubeBaseUrl))
+                link.replace(youtubeBaseUrl, "")
             else ""
 
     constructor(parcel: Parcel) : this(
@@ -35,4 +37,4 @@ data class Video(val title: String?, val link: String?, val thumb: String?
             return arrayOfNulls(size)
         }
     }
-}//todo remove boiled parcelable code
+}

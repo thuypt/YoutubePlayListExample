@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
             .get(MainViewModel::class.java)
         bindCall(viewModel.outputs.showErrorMessage().subscribe(::showErrorMessage))
         bindCall(viewModel.outputs.showProgressDialog().subscribe(::showProgressDialog))
-        bindCall(viewModel.outputs.hideProgressDialog().subscribe(::hideProgressDialog))
+        bindCall(viewModel.outputs.hideProgressDialog().subscribe(::hideLoading))
         bindCall(viewModel.outputs.openVideoDetailScreen().subscribe(::openVideoDetailScreen))
         bindCall(viewModel.outputs.setPlaylist().subscribe(::setPlaylist))
     }
@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
         EspressoIdlingResource.increment()
     }
 
-    private fun hideProgressDialog(isSwipeRefresh: Boolean) {
+    private fun hideLoading(isSwipeRefresh: Boolean) {
         EspressoIdlingResource.decrement()
         progressbar.visibility = View.GONE
         categoryExpandList.visibility = View.VISIBLE
