@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Please replace this with a valid Youtube API key which is enabled for the video player-->
+    <string name="youtube_developer_key">API_KEY_HERE</string>
+</resources>

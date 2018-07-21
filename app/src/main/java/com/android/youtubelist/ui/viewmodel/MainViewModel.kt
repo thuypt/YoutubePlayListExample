@@ -10,6 +10,7 @@ import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.observers.DisposableSingleObserver
+import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 
 class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, MainInputs {
@@ -21,7 +22,7 @@ class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, Main
     private val showEmptyStateSubject: PublishSubject<Unit> = PublishSubject.create()
     private val showErrorMessageSubject: PublishSubject<String> = PublishSubject.create()
     private val openVideoDetailScreenSubject: PublishSubject<Video> = PublishSubject.create()
-    private val setPlaylistSubject: PublishSubject<Playlist> = PublishSubject.create()
+    private val playlistSubject: BehaviorSubject<Playlist> = BehaviorSubject.create()
 
     private var compositeDisposable = CompositeDisposable()
 
@@ -32,16 +33,16 @@ class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, Main
             .subscribeWith(object : DisposableSingleObserver<Playlist>() {
 
                 override fun onSuccess(data: Playlist) {
-                    setPlaylistSubject.onNext(data)
+                    playlistSubject.onNext(data)
                     hideProgressSubject.onNext(Unit)
                 }
 
                 override fun onError(e: Throwable) {
                     showErrorMessageSubject.onNext(e.message)
+                    showEmptyStateSubject.onNext(Unit)
                     hideProgressSubject.onNext(Unit)
                 }
             }))
-
     }
 
     override fun showProgressDialog(): Observable<Unit> = showProgressSubject
@@ -54,7 +55,7 @@ class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, Main
 
     override fun openVideoDetailScreen(): Observable<Video> = openVideoDetailScreenSubject
 
-    override fun setPlaylist(): Observable<Playlist> = setPlaylistSubject
+    override fun setPlaylist(): Observable<Playlist> = playlistSubject
 
     private fun bindCall(disposable: Disposable): Boolean = compositeDisposable.add(disposable)
 }

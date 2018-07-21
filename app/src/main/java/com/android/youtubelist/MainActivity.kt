@@ -1,12 +1,14 @@
 package com.android.youtubelist
 
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import com.android.youtubelist.adapter.CategoryAdapter
 import com.android.youtubelist.model.Playlist
 import com.android.youtubelist.model.Video
+import com.android.youtubelist.ui.activity.VideoDetailActivity
 import com.android.youtubelist.ui.viewmodel.MainViewModel
 import com.android.youtubelist.ui.viewmodel.factory.MainViewModelFactory
 import io.reactivex.disposables.CompositeDisposable
@@ -31,14 +33,11 @@ class MainActivity : AppCompatActivity() {
         categoryExpandList.setAdapter(adapter)
         categoryExpandList.setChildIndicator(null);
         categoryExpandList.setChildDivider(ContextCompat.getDrawable(this, android.R.color.white))
-//        categoryExpandList
-//            .setOnChildClickListener { _, _, groupPosition, childPosition, _ ->
-//                val video = listCategory[groupPosition].listItems?.get(childPosition)
-//                val intent = Intent(this@MainActivity, VideoDetailActivity::class.java)
-//                intent.putExtra(VideoDetailActivity.VIDEO, video)
-//                startActivity(intent)
-//                false
-//            }
+        categoryExpandList
+            .setOnChildClickListener { _, _, groupPosition, childPosition, _ ->
+                viewModel.inputs.onChildItemClick(groupPosition, childPosition)
+                false
+            }
     }
 
     private fun initViewModel() {
@@ -76,7 +75,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openVideoDetailScreen(video: Video) {
-
+        val intent = Intent(this@MainActivity, VideoDetailActivity::class.java)
+        intent.putExtra(VideoDetailActivity.VIDEO, video)
+        startActivity(intent)
     }
 
     private fun bindCall(disposable: Disposable): Boolean = compositeDisposable.add(disposable)
