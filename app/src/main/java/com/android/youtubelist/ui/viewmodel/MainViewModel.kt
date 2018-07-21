@@ -19,7 +19,8 @@ class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, Main
     val outputs = this
     val inputs = this
 
-    private val showProgressSubject: PublishSubject<Unit> = PublishSubject.create()
+    private val fetchPlaylistSubject: PublishSubject<Unit> = PublishSubject.create()
+    private val showProgressDialogSubject: PublishSubject<Unit> = PublishSubject.create()
     private val hideProgressSubject: PublishSubject<Unit> = PublishSubject.create()
     private val showErrorMessageSubject: PublishSubject<String> = PublishSubject.create()
     private val openVideoDetailScreenSubject: PublishSubject<Video> = PublishSubject.create()
@@ -29,11 +30,24 @@ class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, Main
     private var compositeDisposable = CompositeDisposable()
 
     init {
-        showProgressSubject.onNext(Unit)
+        bindCall(fetchPlaylistSubject
+            .subscribe {
+                showProgressDialogSubject.onNext(Unit)
+                requestPlaylist()
+            })
+
+        bindCall(childItemClickSubject
+            .withLatestFrom(playlistSubject,
+                BiFunction<Pair<Int, Int>, Playlist, Video> { itemClick, list ->
+                    list.playlists[itemClick.first].listItems?.get(itemClick.second)
+                })
+            .subscribe(openVideoDetailScreenSubject::onNext))
+    }
+
+    private fun requestPlaylist() {
         bindCall(repository
             .getPlayList()
             .subscribeWith(object : DisposableSingleObserver<Playlist>() {
-
                 override fun onSuccess(data: Playlist) {
                     playlistSubject.onNext(data)
                     hideProgressSubject.onNext(Unit)
@@ -44,16 +58,9 @@ class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, Main
                     hideProgressSubject.onNext(Unit)
                 }
             }))
-
-        bindCall(childItemClickSubject
-            .withLatestFrom(playlistSubject,
-                BiFunction<Pair<Int, Int>, Playlist, Video> { itemClick, list ->
-                    list.playlists[itemClick.first].listItems?.get(itemClick.second)
-                })
-            .subscribe(openVideoDetailScreenSubject::onNext))
     }
 
-    override fun showProgressDialog(): Observable<Unit> = showProgressSubject
+    override fun showProgressDialog(): Observable<Unit> = showProgressDialogSubject
 
     override fun hideProgressDialog(): Observable<Unit> = hideProgressSubject
 
@@ -62,6 +69,8 @@ class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, Main
     override fun openVideoDetailScreen(): Observable<Video> = openVideoDetailScreenSubject
 
     override fun setPlaylist(): Observable<Playlist> = playlistSubject
+
+    override fun fetchPlaylist() = fetchPlaylistSubject.onNext(Unit)
 
     override fun onChildItemClick(groupPosition: Int, childPosition: Int) {
         childItemClickSubject.onNext(Pair(groupPosition, childPosition))

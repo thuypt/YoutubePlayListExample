@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import com.android.youtubelist.adapter.CategoryAdapter
 import com.android.youtubelist.model.Playlist
 import com.android.youtubelist.model.Video
@@ -17,24 +18,24 @@ import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var viewModel: MainViewModel
     private lateinit var compositeDisposable: CompositeDisposable
-    private lateinit var adapter: CategoryAdapter
+    private lateinit var viewModel: MainViewModel
+    private lateinit var categoryAdapter: CategoryAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        compositeDisposable = CompositeDisposable()
         initViews()
         initViewModel()
+
+        viewModel.inputs.fetchPlaylist()
     }
 
     private fun initViews() {
-        adapter = CategoryAdapter(this)
+        categoryAdapter = CategoryAdapter(this)
         categoryExpandList.apply {
             setChildIndicator(null)
-            emptyView = emptyView
-            adapter = adapter
+            setAdapter(categoryAdapter)
             setChildDivider(ContextCompat.getDrawable(this@MainActivity, android.R.color.white))
             setOnChildClickListener { _, _, groupPosition, childPosition, _ ->
                 viewModel.inputs.onChildItemClick(groupPosition, childPosition)
@@ -44,9 +45,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initViewModel() {
+        compositeDisposable = CompositeDisposable()
         viewModel = ViewModelProviders.of(this, MainViewModelFactory())
             .get(MainViewModel::class.java)
-
         bindCall(viewModel.outputs.showErrorMessage().subscribe(::showErrorMessage))
         bindCall(viewModel.outputs.showProgressDialog().subscribe(::showProgressDialog))
         bindCall(viewModel.outputs.hideProgressDialog().subscribe(::hideProgressDialog))
@@ -55,8 +56,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setPlaylist(list: Playlist) {
-        adapter.clearAndAddAll(list.playlists)
-        adapter.notifyDataSetChanged()
+        categoryAdapter.clearAndAddAll(list.playlists)
+        categoryAdapter.notifyDataSetChanged()
     }
 
     private fun showErrorMessage(message: String) {
@@ -68,11 +69,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showProgressDialog(unit: Unit) {
-
+        categoryExpandList.visibility = View.GONE
+        progressbar.visibility = View.VISIBLE
     }
 
     private fun hideProgressDialog(unit: Unit) {
-
+        progressbar.visibility = View.GONE
+        categoryExpandList.visibility = View.VISIBLE
     }
 
     private fun openVideoDetailScreen(video: Video) {
@@ -81,7 +84,10 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    override fun onDestroy() {
+        compositeDisposable.clear()
+        super.onDestroy()
+    }
+
     private fun bindCall(disposable: Disposable): Boolean = compositeDisposable.add(disposable)
 }
-
-
