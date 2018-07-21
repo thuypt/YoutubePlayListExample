@@ -9,7 +9,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class ApiClient {
+class ApiClient {
     private static Retrofit retrofit = null;
     private static int REQUEST_TIMEOUT = 30;
     private static OkHttpClient okHttpClient;
