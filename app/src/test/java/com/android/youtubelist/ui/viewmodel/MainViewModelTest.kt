@@ -29,10 +29,10 @@ class MainViewModelTest {
         val showErrorMessage = viewModel.outputs.showErrorMessage().test()
         val openVideoDetailScreen = viewModel.outputs.openVideoDetailScreen().test()
 
-        viewModel.inputs.fetchPlaylist()
+        viewModel.inputs.fetchPlaylist(false)
 
         showProgressDialog.assertValueCount(1)
-        hideProgressDialog.assertValueCount(1)
+        hideProgressDialog.assertValueCount(1).assertValue { !it }
         showErrorMessage.assertValueCount(1).assertValue { it == "Server Error" }
         setPlaylist.assertValueCount(0)
         openVideoDetailScreen.assertValueCount(0)
@@ -50,10 +50,10 @@ class MainViewModelTest {
         val showErrorMessage = viewModel.outputs.showErrorMessage().test()
         val openVideoDetailScreen = viewModel.outputs.openVideoDetailScreen().test()
 
-        viewModel.inputs.fetchPlaylist()
+        viewModel.inputs.fetchPlaylist(false)
 
         showProgressDialog.assertValueCount(1)
-        hideProgressDialog.assertValueCount(1)
+        hideProgressDialog.assertValueCount(1).assertValue { !it }
         showErrorMessage.assertValueCount(0)
         setPlaylist.assertValueCount(1).assertValue { it == playlist }
         openVideoDetailScreen.assertValueCount(0)
@@ -74,11 +74,11 @@ class MainViewModelTest {
         val showErrorMessage = viewModel.outputs.showErrorMessage().test()
         val openVideoDetailScreen = viewModel.outputs.openVideoDetailScreen().test()
 
-        viewModel.fetchPlaylist()
+        viewModel.fetchPlaylist(false)
 
         viewModel.inputs.onChildItemClick(0, 2)
         showProgressDialog.assertValueCount(1)
-        hideProgressDialog.assertValueCount(1)
+        hideProgressDialog.assertValueCount(1).assertValue { !it }
         showErrorMessage.assertValueCount(0)
         setPlaylist.assertValueCount(1)
         openVideoDetailScreen

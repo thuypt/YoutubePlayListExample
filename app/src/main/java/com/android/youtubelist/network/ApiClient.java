@@ -11,7 +11,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiClient {
     private static Retrofit retrofit = null;
-    private static int REQUEST_TIMEOUT = 60;
+    private static int REQUEST_TIMEOUT = 30;
     private static OkHttpClient okHttpClient;
     private static final String BASE_URL = "https://demo0937961.mockable.io/";
 

@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
+import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.view.View
@@ -18,7 +19,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
     private lateinit var compositeDisposable: CompositeDisposable
     private lateinit var viewModel: MainViewModel
     private lateinit var categoryAdapter: CategoryAdapter
@@ -29,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         initViews()
         initViewModel()
 
-        viewModel.inputs.fetchPlaylist()
+        viewModel.inputs.fetchPlaylist(false)
     }
 
     private fun initViews() {
@@ -43,6 +44,8 @@ class MainActivity : AppCompatActivity() {
                 false
             }
         }
+
+        swiperefresh.setOnRefreshListener(this)
     }
 
     private fun initViewModel() {
@@ -54,6 +57,11 @@ class MainActivity : AppCompatActivity() {
         bindCall(viewModel.outputs.hideProgressDialog().subscribe(::hideProgressDialog))
         bindCall(viewModel.outputs.openVideoDetailScreen().subscribe(::openVideoDetailScreen))
         bindCall(viewModel.outputs.setPlaylist().subscribe(::setPlaylist))
+    }
+
+    override fun onRefresh() {
+        viewModel.inputs.fetchPlaylist(true)
+        EspressoIdlingResource.increment()
     }
 
     private fun setPlaylist(list: Playlist) {
@@ -75,10 +83,13 @@ class MainActivity : AppCompatActivity() {
         EspressoIdlingResource.increment()
     }
 
-    private fun hideProgressDialog(unit: Unit) {
+    private fun hideProgressDialog(isSwipeRefresh: Boolean) {
         EspressoIdlingResource.decrement()
         progressbar.visibility = View.GONE
         categoryExpandList.visibility = View.VISIBLE
+        if (isSwipeRefresh) {
+            swiperefresh.isRefreshing = false
+        }
     }
 
     private fun openVideoDetailScreen(video: Video) {

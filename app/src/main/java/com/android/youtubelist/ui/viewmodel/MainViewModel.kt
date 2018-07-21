@@ -18,9 +18,9 @@ class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, Main
     val outputs = this
     val inputs = this
 
-    private val fetchPlaylistSubject: PublishSubject<Unit> = PublishSubject.create()
+    private val fetchPlaylistSubject: PublishSubject<Boolean> = PublishSubject.create()
     private val showProgressDialogSubject: PublishSubject<Unit> = PublishSubject.create()
-    private val hideProgressSubject: PublishSubject<Unit> = PublishSubject.create()
+    private val hideProgressSubject: PublishSubject<Boolean> = PublishSubject.create()
     private val showErrorMessageSubject: PublishSubject<String> = PublishSubject.create()
     private val openVideoDetailScreenSubject: PublishSubject<Video> = PublishSubject.create()
     private val playlistSubject: BehaviorSubject<Playlist> = BehaviorSubject.create()
@@ -30,10 +30,11 @@ class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, Main
 
     init {
         bindCall(fetchPlaylistSubject
-            .subscribe {
-                showProgressDialogSubject.onNext(Unit)
-                requestPlaylist()
-            })
+            .subscribe { requestPlaylist(it) })
+
+        bindCall(fetchPlaylistSubject
+            .filter { !it }
+            .subscribe { showProgressDialogSubject.onNext(Unit) })
 
         bindCall(childItemClickSubject
             .withLatestFrom(playlistSubject,
@@ -43,18 +44,18 @@ class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, Main
             .subscribe(openVideoDetailScreenSubject::onNext))
     }
 
-    private fun requestPlaylist() {
+    private fun requestPlaylist(isSwipeRefresh: Boolean) {
         bindCall(repository
             .getPlayList()
             .subscribeWith(object : DisposableSingleObserver<Playlist>() {
                 override fun onSuccess(data: Playlist) {
                     playlistSubject.onNext(data)
-                    hideProgressSubject.onNext(Unit)
+                    hideProgressSubject.onNext(isSwipeRefresh)
                 }
 
                 override fun onError(e: Throwable) {
                     showErrorMessageSubject.onNext(e.message)
-                    hideProgressSubject.onNext(Unit)
+                    hideProgressSubject.onNext(isSwipeRefresh)
                 }
             }))
     }
@@ -65,7 +66,7 @@ class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, Main
 
     override fun showProgressDialog(): Observable<Unit> = showProgressDialogSubject
 
-    override fun hideProgressDialog(): Observable<Unit> = hideProgressSubject
+    override fun hideProgressDialog(): Observable<Boolean> = hideProgressSubject
 
     override fun showErrorMessage(): Observable<String> = showErrorMessageSubject
 
@@ -73,7 +74,7 @@ class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, Main
 
     override fun setPlaylist(): Observable<Playlist> = playlistSubject
 
-    override fun fetchPlaylist() = fetchPlaylistSubject.onNext(Unit)
+    override fun fetchPlaylist(isSwipeRefresh: Boolean) = fetchPlaylistSubject.onNext(isSwipeRefresh)
 
     override fun onChildItemClick(groupPosition: Int, childPosition: Int) {
         childItemClickSubject.onNext(Pair(groupPosition, childPosition))

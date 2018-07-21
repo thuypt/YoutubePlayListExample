@@ -7,7 +7,7 @@ import io.reactivex.Observable
 interface MainOutputs {
     fun showProgressDialog(): Observable<Unit>
 
-    fun hideProgressDialog(): Observable<Unit>
+    fun hideProgressDialog(): Observable<Boolean>
 
     fun showErrorMessage(): Observable<String>
 

@@ -66,4 +66,3 @@ class ActivityInstrumentationTest {
             .check(matches(isDisplayed()))
     }
 }
-
