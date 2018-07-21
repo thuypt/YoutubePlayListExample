@@ -26,12 +26,10 @@ class VideoDetailActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedLi
     override fun onInitializationSuccess(provider: YouTubePlayer.Provider,
                                          youTubePlayer: YouTubePlayer, wasRestored: Boolean) {
         if (!wasRestored) {
-            video.id?.let {
-                youTubePlayer.apply {
-                    loadVideo(video.id)
-                    setFullscreen(true)
-                    setShowFullscreenButton(false)
-                }
+            youTubePlayer.apply {
+                loadVideo(video.id)
+                setFullscreen(true)
+                setShowFullscreenButton(false)
             }
         }
     }

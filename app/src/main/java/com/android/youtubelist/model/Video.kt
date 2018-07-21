@@ -5,7 +5,11 @@ import android.os.Parcelable
 
 data class Video(val title: String?, val link: String?, val thumb: String?
 ) : Parcelable {
-    val id get() = link?.replace("https://www.youtube.com/watch?v=", "")
+    val youtubeBaseUrl = "https://www.youtube.com/watch?v="
+    val id
+        get() =
+            if (link != null && link.contains(youtubeBaseUrl)) link.replace(youtubeBaseUrl, "")
+            else ""
 
     constructor(parcel: Parcel) : this(
         parcel.readString(),
