@@ -4,4 +4,4 @@ import com.google.gson.annotations.SerializedName
 
 data class CategoryVideo(
     @SerializedName("list_title") val listTitle: String?,
-    @SerializedName("list_items") val listItems: ArrayList<Video>?)
+    @SerializedName("list_items") val listItems: List<Video>?)

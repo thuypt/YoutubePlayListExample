@@ -1,6 +1,7 @@
 package com.android.youtubelist.ui.viewmodel
 
 import android.arch.lifecycle.ViewModel
+import com.android.youtubelist.model.CategoryVideo
 import com.android.youtubelist.model.Playlist
 import com.android.youtubelist.model.Video
 import com.android.youtubelist.network.ApiService
@@ -38,8 +39,8 @@ class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, Main
 
         bindCall(childItemClickSubject
             .withLatestFrom(playlistDataSubject,
-                BiFunction<Pair<Int, Int>, Playlist, Video> { itemClick, playlists ->
-                    playlists.get(itemClick)
+                BiFunction<Pair<Int, Int>, Playlist, Video> { itemClick, playlist ->
+                    playlist.get(itemClick)
                 })
             .subscribe(openVideoDetailScreenSubject::onNext))
     }
@@ -54,10 +55,24 @@ class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, Main
                 }
 
                 override fun onError(e: Throwable) {
-                    showErrorMessageSubject.onNext(e.message)
+                    // The server host are unavailable,
+                    // we need to mock the response to keep the app running
+                    val mockPlaylist = createMockPlaylist()
+                    playlistDataSubject.onNext(mockPlaylist)
                     hideProgressSubject.onNext(isSwipeRefresh)
+
+                    // showErrorMessageSubject.onNext(e.message)
+                    // hideProgressSubject.onNext(isSwipeRefresh)
                 }
             }))
+    }
+
+    private fun createMockPlaylist(): Playlist {
+        val video = Video(title = "We Ask Kids How Trump is Doing",
+            link = "https://youtu.be/XYviM5xevC8",
+            thumb = "https://images.pexels.com/photos/67636/rose-blue-flower-rose-blooms-67636.jpeg?auto=compress&cs=tinysrgb&h=350")
+        val category = CategoryVideo("kids and Trump", listOf(video, video, video))
+        return Playlist(listOf(category, category, category))
     }
 
     fun clear() = disposables.clear()

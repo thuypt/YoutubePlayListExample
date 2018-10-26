@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class PlaylistAdapter extends BaseExpandableListAdapter {
@@ -26,7 +27,7 @@ public class PlaylistAdapter extends BaseExpandableListAdapter {
         mListCategoryVideo = new ArrayList<>();
     }
 
-    public void clearAndAddAll(ArrayList<CategoryVideo> data) {
+    public void clearAndAddAll(List<CategoryVideo> data) {
         mListCategoryVideo.clear();
         mListCategoryVideo.addAll(data);
     }
