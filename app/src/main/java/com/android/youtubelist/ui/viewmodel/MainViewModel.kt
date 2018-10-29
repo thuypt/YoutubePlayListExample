@@ -15,7 +15,7 @@ import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 
-class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, MainInputs {
+class MainViewModel(val apiService: ApiService) : ViewModel(), MainOutputs, MainInputs {
     val outputs = this
     val inputs = this
 
@@ -46,7 +46,7 @@ class MainViewModel(val repository: ApiService) : ViewModel(), MainOutputs, Main
     }
 
     private fun requestPlaylist(isSwipeRefresh: Boolean) {
-        bindCall(repository
+        bindCall(apiService
             .getPlayList()
             .subscribeWith(object : DisposableSingleObserver<Playlist>() {
                 override fun onSuccess(data: Playlist) {

@@ -11,26 +11,32 @@ import android.view.View
 import android.widget.AbsListView
 import com.android.youtubelist.R
 import com.android.youtubelist.adapter.PlaylistAdapter
+import com.android.youtubelist.di.DaggerNetworkModule
 import com.android.youtubelist.espressoidling.EspressoIdlingResource
 import com.android.youtubelist.model.Playlist
 import com.android.youtubelist.model.Video
+import com.android.youtubelist.network.ApiServiceImpl
 import com.android.youtubelist.ui.viewmodel.MainViewModel
 import com.android.youtubelist.ui.viewmodel.factory.MainViewModelFactory
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_main.*
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
     private lateinit var disposables: CompositeDisposable
     private lateinit var viewModel: MainViewModel
     private lateinit var playlistAdapter: PlaylistAdapter
+    @Inject
+    lateinit var apiService: ApiServiceImpl
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        DaggerNetworkModule.create().poke(this)
+
         initViews()
         initViewModel()
-
         viewModel.inputs.fetchPlaylist(false)
     }
 
@@ -52,7 +58,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
 
     private fun initViewModel() {
         disposables = CompositeDisposable()
-        viewModel = ViewModelProviders.of(this, MainViewModelFactory())
+        viewModel = ViewModelProviders.of(this, MainViewModelFactory(apiService))
             .get(MainViewModel::class.java)
         bindCall(viewModel.outputs.showErrorMessage().subscribe(::showErrorMessage))
         bindCall(viewModel.outputs.showProgressDialog().subscribe(::showProgressDialog))
@@ -95,9 +101,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
         EspressoIdlingResource.decrement()
         mainProgressBar.visibility = View.GONE
         mainExpandableList.visibility = View.VISIBLE
-        if (isSwipeRefresh) {
-            mainSwipeReFresh.isRefreshing = false
-        }
+        if (isSwipeRefresh) mainSwipeReFresh.isRefreshing = false
     }
 
     private fun openVideoDetailScreen(video: Video) =
